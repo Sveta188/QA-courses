@@ -1,0 +1,10 @@
+#!/bin/bash
+echo Enter the path:
+read my_path
+if [ -d "$mypath" -o -e "$mypath" ]
+then 
+echo "File or directory exists"
+else
+echo "No sush file or directory"
+fi
+

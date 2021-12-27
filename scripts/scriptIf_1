@@ -1,0 +1,10 @@
+#!/bin/bash
+number_0=0
+echo Print the number:
+read number_1
+if [ "$number_1" -gt "$number_0" ]
+then 
+echo "Number is positive"
+else 
+echo "Your number is negative or equals 0"
+fi
