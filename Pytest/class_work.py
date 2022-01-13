@@ -1,4 +1,3 @@
-import random
 from string import ascii_lowercase as string
 sub = {'p.e': None, 'math': None, 'literature': None, 'geography': None, 'biology': None}
 
@@ -51,5 +50,4 @@ class School:
 
                 if average >= 7:
                     print(f'Студент {student.first_name} {student.initials} имеет средний бал равный {average}!')
-
 
