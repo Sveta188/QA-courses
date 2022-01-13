@@ -10,7 +10,7 @@ class Test:
     password = "Bler4321!"
 
     def test_new(self):
-        self.driver = webdriver.Chrome("/home/hadus/PycharmProjects/pythonProject3/tools/chromedriver")
+        self.driver = webdriver.Chrome("/home/hadus/QA-courses/Selenium/tools/chromedriver")
         self.driver.get(self.url)
         self.driver.maximize_window()
 
