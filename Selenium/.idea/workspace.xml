@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62f23f9b-82dd-40c6-8254-d0f1eb7fd72f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Selenium2/.idea/pythonProject6.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pythonProject3.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pythonProject3.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +77,9 @@
       <workItem from="1640599806722" duration="619000" />
       <workItem from="1642048893149" duration="612000" />
       <workItem from="1642089713841" duration="3803000" />
-      <workItem from="1642095089712" duration="1274000" />
+      <workItem from="1642095089712" duration="2623000" />
+      <workItem from="1643022455268" duration="1034000" />
+      <workItem from="1643040356896" duration="872000" />
     </task>
     <servers />
   </component>
