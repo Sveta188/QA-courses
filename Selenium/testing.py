@@ -5,6 +5,7 @@ import psycopg2
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -34,7 +35,7 @@ class Test:
 
     @pytest.fixture
     def login_fixture(self):
-        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
