@@ -1,9 +1,0 @@
-#!/bin/bash
-echo "Enter the symbol:"
-read s
-case "$s" in
-[[:lower:]]  ) echo "Lower letter";;
-[[:upper:]]  ) echo "Upper letter";;
-[0-9]  ) echo "This is num";;
-*      ) echo "Something wrong";;
-esac

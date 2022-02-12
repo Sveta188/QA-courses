@@ -1,9 +1,0 @@
-#!/bin/bash
-for num in `seq 11 -1 1`
-do
-if [[ $num%2 -ne "0" ]]
-then
-continue
-fi
-echo $num
-done
