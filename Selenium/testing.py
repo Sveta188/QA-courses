@@ -33,7 +33,7 @@ class Test:
 
     @pytest.fixture
     def login_fixture(self):
-        self.driver = webdriver.Chrome("Selenium/tools/chromedriver")
+        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
