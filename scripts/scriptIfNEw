@@ -1,0 +1,10 @@
+#!/bin/bash
+echo Give me your file or directory and i\'ll check it:
+read varguess
+if [ -d "$varguess" -o -e "$varguess" ]
+then
+echo Your $varguess exists.
+else
+echo Your $varguess doesn\'t exist.
+fi
+
