@@ -35,7 +35,10 @@ class Test:
 
     @pytest.fixture
     def login_fixture(self):
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-gpu')
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=chrome_options)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
