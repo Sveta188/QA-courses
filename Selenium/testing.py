@@ -3,11 +3,14 @@ import time
 
 import pytest
 import psycopg2
+import requests
+import uuid
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
 
 
 
@@ -17,6 +20,7 @@ class Test:
     login = "admin"
     password = "password"
     driver_path = os.getcwd() + '/tools/chromedriver'
+    api_url = "https://petstore.swagger.io/v2"
 
     @classmethod
     def setup_class(cls):
@@ -96,5 +100,68 @@ class Test:
                 """)
                 group_name = cur.fetchone()[0]
         assert self.group_name == group_name, f"{group_name} is not equal."
+
+
+    def test_api_create_user(self):
+        username = uuid.uuid4().hex
+        print(username)
+        response = requests.post(self.api_url + "/user", json={
+          "id": 0,
+          "username": username,
+          "firstName": "string",
+          "lastName": "string",
+          "email": "string@string",
+          "password": "string",
+          "phone": "string",
+          "userStatus": 1
+        },
+        headers={
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        })
+        assert response.status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + "/user/login", params={"username": username, "password": "string"}).status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + f'/user/{username}').status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + "/user/logout").status_code == 200
+        time.sleep(2)
+        assert requests.delete(self.api_url + f'/user/{username}').status_code == 200
+        time.sleep(2)
+
+
+    def test_api_create_user(self):
+        username = uuid.uuid4().hex
+        print(username)
+        response = requests.post(self.api_url + "/user", json={
+          "id": 0,
+          "username": username,
+          "firstName": "string",
+          "lastName": "string",
+          "email": "string@string",
+          "password": "string",
+          "phone": "string",
+          "userStatus": 1
+        },
+        headers={
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        })
+        assert response.status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + "/user/login", params={"username": username, "password": "string"}).status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + f'/user/{username}').status_code == 200
+        time.sleep(2)
+        assert requests.get(self.api_url + "/user/logout").status_code == 200
+        time.sleep(2)
+        assert requests.delete(self.api_url + f'/user/{username}').status_code == 200
+        time.sleep(2)
+
+
+
+
+
 
 
