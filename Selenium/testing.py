@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
+
 @pytest.mark.usefixtures('db')
 class Test:
     url = "http://localhost:8000/"
@@ -80,10 +81,9 @@ class Test:
         password_field2.send_keys(password_u)
         self.driver.find_element(By.CSS_SELECTOR,
                                  "#user_form > div > div > input.default").submit()
+
         self.driver.find_element(By.CSS_SELECTOR,
-                                 "#id_groups_from > option").click()
-        self.driver.find_element(By.ID,
-                                 "id_groups_add_link").click()
+                                  "#id_groups_add_all_link").click()
         self.driver.find_element(By.CSS_SELECTOR,
                                  "#user_form > div > div > input.default").submit()
         with psycopg2.connect(dbname='postgres', user='postgres', password='postgres', host='localhost') as connection:
