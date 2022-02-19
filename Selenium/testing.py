@@ -1,6 +1,6 @@
 import os
 import time
-
+import json
 import pytest
 import psycopg2
 import requests
@@ -102,7 +102,7 @@ class Test:
         assert self.group_name == group_name, f"{group_name} is not equal."
 
 
-    def test_api_create_user(self):
+    def test_api_user(self):
         username = uuid.uuid4().hex
         print(username)
         response = requests.post(self.api_url + "/user", json={
@@ -131,33 +131,51 @@ class Test:
         time.sleep(2)
 
 
-    def test_api_create_user(self):
-        username = uuid.uuid4().hex
-        print(username)
-        response = requests.post(self.api_url + "/user", json={
-          "id": 0,
-          "username": username,
-          "firstName": "string",
-          "lastName": "string",
-          "email": "string@string",
-          "password": "string",
-          "phone": "string",
-          "userStatus": 1
+    def test_api_pet(self):
+        name = uuid.uuid4().hex
+        print(name)
+        response = requests.post(self.api_url + "/pet", json={
+                "id": 0,
+                "category": {
+                    "id": 0,
+                    "name": "string"
+                },
+                "name": name,
+                "photoUrls": [
+                    "string"
+                ],
+                "tags": [
+                    {
+                        "id": 0,
+                        "name": "string"
+                    }
+                ],
+                "status": "available"
+
         },
         headers={
             "accept": "application/json",
             "Content-Type": "application/json"
         })
         assert response.status_code == 200
+        petId = response.json()['id']
+        print(petId)
+        assert requests.get(self.api_url + f'/pet/{petId}').status_code == 200
         time.sleep(2)
-        assert requests.get(self.api_url + "/user/login", params={"username": username, "password": "string"}).status_code == 200
+        assert requests.post(self.api_url + f"/pet/{petId}", data={
+                "name": "hgvhjhgfyujbvftyujbfyujftyujbvfgcfyujhfdrftyhvcxdtyuikouytdxcvhjhghiuyfdtyujhfcdft",
+                "status": "available"
+
+        },
+        headers={
+            "accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }).status_code == 200
         time.sleep(2)
-        assert requests.get(self.api_url + f'/user/{username}').status_code == 200
-        time.sleep(2)
-        assert requests.get(self.api_url + "/user/logout").status_code == 200
-        time.sleep(2)
-        assert requests.delete(self.api_url + f'/user/{username}').status_code == 200
-        time.sleep(2)
+        response = requests.get(self.api_url + f'/pet/{petId}')
+        assert response.status_code == 200
+        assert response.json()['name'] == "hgvhjhgfyujbvftyujbfyujftyujbvfgcfyujhfdrftyhvcxdtyuikouytdxcvhjhghiuyfdtyujhfcdft"
+
 
 
 
