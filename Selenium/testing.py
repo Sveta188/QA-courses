@@ -11,7 +11,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 driver_path = os.getcwd() + '/tools/chromedriver'
-os.environ['PATH'] += os.pathsep + driver_path
 
 @pytest.mark.usefixtures('db')
 class Test:
@@ -41,9 +40,10 @@ class Test:
     def login_fixture(self):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-extensions')
         print(driver_path)
-        self.driver = webdriver.Chrome(driver_path, options=chrome_options)
+        self.driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
