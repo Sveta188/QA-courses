@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -8,6 +9,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+
+driver_path = os.getcwd() + '/tools/chromedriver'
 
 @pytest.mark.usefixtures('db')
 class Test:
@@ -38,7 +41,8 @@ class Test:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
-        self.driver = webdriver.Chrome("/home/hadus/QA-courses/Selenium/tools/chromedriver")
+        print(driver_path)
+        self.driver = webdriver.Chrome(driver_path)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
