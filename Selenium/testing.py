@@ -10,13 +10,12 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-driver_path = os.getcwd() + '/tools/chromedriver'
-
 @pytest.mark.usefixtures('db')
 class Test:
     url = "http://localhost:8000/"
     login = "admin"
     password = "password"
+    driver_path = os.getcwd() + '/tools/chromedriver'
 
     @classmethod
     def setup_class(cls):
@@ -42,8 +41,8 @@ class Test:
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-extensions')
-        print(driver_path)
-        self.driver = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
+        print(self.driver_path)
+        self.driver = webdriver.Chrome(service=Service(self.driver_path), options=chrome_options)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
