@@ -43,7 +43,7 @@ class Test:
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
         print(driver_path)
-        self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
