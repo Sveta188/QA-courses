@@ -11,6 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 driver_path = os.getcwd() + '/tools/chromedriver'
+os.environ['PATH'] += os.pathsep + driver_path
 
 @pytest.mark.usefixtures('db')
 class Test:
