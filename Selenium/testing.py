@@ -42,7 +42,7 @@ class Test:
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-extensions')
         print(self.driver_path)
-        self.driver = webdriver.Chrome(service=Service(self.driver_path), options=chrome_options)
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         self.driver.implicitly_wait(2)
         self.driver.get(self.url)
         self.driver.maximize_window()
