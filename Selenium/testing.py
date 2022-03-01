@@ -1,94 +1,57 @@
 import os
 import time
-import json
 import pytest
 import psycopg2
 import requests
 import uuid
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+
+api_url = os.getenv('REMOTE_API_URL')
+dbname=os.getenv('DB_NAME')
+user=os.getenv('DB_USER')
+password=os.getenv('DB_PASSWORD')
+host=os.getenv('DB_HOST')
+
+group_name = os.getenv('GROUP_NAME')
+user_name = os.getenv('USER_NAME')
+user_password = os.getenv('USER_PASSWORD')
 
 
-
-
-@pytest.mark.usefixtures('db')
+@pytest.mark.usefixtures('db_1')
 class Test_group_1:
-    url = "http://localhost:8000/"
-    login = "admin"
-    password = "password"
-    driver_path = os.getcwd() + '/tools/chromedriver'
-    api_url = "https://petstore.swagger.io/v2"
 
     @classmethod
-    def setup_class(cls):
-        cls.group_name = 'test_nam1e'
-        cls.user_name = 'test_user'
-
-    @pytest.fixture(scope='class')
-    def db(self):
-        with psycopg2.connect(dbname='postgres', user='postgres', password='postgres', host='localhost') as connection:
-            with connection.cursor() as cur:
-                cur.execute(f"""INSERT INTO auth_group (name) values ('{self.group_name}') returning id""")
-                id = cur.fetchone()[0]
-                connection.commit()
-                yield
-                cur.execute(f"""DELETE FROM auth_user WHERE username = '{self.user_name}'""")
-                cur.execute(f"""DELETE FROM auth_user_groups WHERE group_id = {id}""")
-                cur.execute(f"""DELETE FROM auth_group WHERE name = '{self.group_name}'""")
-                connection.commit()
-
-    @pytest.fixture
-    def login_fixture(self):
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-extensions')
-        print(self.driver_path)
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        self.driver.implicitly_wait(2)
-        self.driver.get(self.url)
-        self.driver.maximize_window()
-        self.driver.find_element(By.CSS_SELECTOR, "body > main > section > div > p:nth-child(3) > a").click()
-
-        login_field = self.driver.find_element(By.ID, "id_username")
-        login_field.send_keys(self.login)
-        password_field = self.driver.find_element(By.ID, "id_password")
-        password_field.send_keys(self.password)
-        self.driver.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
-        yield
-        self.driver.quit()
+    def setup(cls):
+        cls.username = uuid.uuid4().hex
 
     def test_group(self, login_fixture):
-        # db.execute(f"""INSERT INTO auth_group (name) values ('{self.group_name}')""")
-        self.driver.find_element(By.CSS_SELECTOR, "#content-main > div.app-auth.module > table > tbody > tr.model-group > th > a").click()
-        title = self.driver.find_element(By.CSS_SELECTOR, "#result_list > tbody > tr > th > a").text
-        assert title == self.group_name, f"{title} is not equal."
+        login_fixture.find_element(By.CSS_SELECTOR, "#content-main > div.app-auth.module > table > tbody > tr.model-group > th > a").click()
+        title = login_fixture.find_element(By.CSS_SELECTOR, "#result_list > tbody > tr > th > a").text
+        assert title == group_name, f"{title} is not equal."
 
 
     def test_user(self, login_fixture):
-        username_u = self.user_name
-        password_u = "YFhjgbgdG3$%^gvf54ef"
-        self.driver.find_element(By.CSS_SELECTOR,
+        username_u = user_name
+        password_u = user_password
+        login_fixture.find_element(By.CSS_SELECTOR,
         "#content-main > div.app-auth.module > table > tbody > tr.model-user > th > a ").click()
 
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                     "#content-main > ul > li > a").click()
 
-        login_field = self.driver.find_element(By.CSS_SELECTOR, "#id_username")
+        login_field = login_fixture.find_element(By.CSS_SELECTOR, "#id_username")
         login_field.send_keys(username_u)
-        password_field = self.driver.find_element(By.ID, "id_password1")
+        password_field = login_fixture.find_element(By.ID, "id_password1")
         password_field.send_keys(password_u)
-        password_field2 = self.driver.find_element(By.ID, "id_password2")
+        password_field2 = login_fixture.find_element(By.ID, "id_password2")
         password_field2.send_keys(password_u)
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#user_form > div > div > input.default").submit()
 
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                   "#id_groups_add_all_link").click()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#user_form > div > div > input.default").submit()
         with psycopg2.connect(dbname='postgres', user='postgres', password='postgres', host='localhost') as connection:
             with connection.cursor() as cur:
@@ -96,154 +59,123 @@ class Test_group_1:
                     SELECT name FROM auth_group as g
                     LEFT JOIN auth_user_groups ug on g.id = ug.group_id
                     LEFT JOIN auth_user u on ug.user_id = u.id
-                    WHERE u.username = '{self.user_name}'
+                    WHERE u.username = '{user_name}'
                 """)
-                group_name = cur.fetchone()[0]
-        assert self.group_name == group_name, f"{group_name} is not equal."
+                res_group_name = cur.fetchone()[0]
+        assert group_name == res_group_name, f"{res_group_name} is not equal."
 
 
     def test_api_user(self):
-
-        username = uuid.uuid4().hex
-        print(username)
-        response = requests.post(self.api_url + "/user", json={
+        response = requests.post(api_url + "/user", json={
           "id": 0,
-          "username": username,
+          "username": self.username,
           "firstName": "string",
           "lastName": "string",
           "email": "string@string",
           "password": "string",
           "phone": "string",
-          "userStatus": 1
+          "userStatus": 0
         },
         headers={
             "accept": "application/json",
             "Content-Type": "application/json"
         })
+        time.sleep(10)
         assert response.status_code == 200
-        time.sleep(2)
-        assert requests.get(self.api_url + "/user/login", params={"username": username, "password": "string"}).status_code == 200
-        time.sleep(2)
-        assert requests.get(self.api_url + f'/user/{username}').status_code == 200
-        time.sleep(2)
-        assert requests.get(self.api_url + "/user/logout").status_code == 200
-        time.sleep(2)
-        assert requests.delete(self.api_url + f'/user/{username}').status_code == 200
-        time.sleep(2)
+
+    def test_api_user_login(self):
+        time.sleep(10)
+        assert requests.get(api_url + "/user/login", params={"username": self.username, "password": "string"}).status_code == 200
+
+    def test_api_user_get(self):
+        time.sleep(10)
+        print(self.username)
+        assert requests.get(api_url + f'/user/{self.username}').status_code == 200
+
+    def test_api_user_logout(self):
+        time.sleep(10)
+        assert requests.get(api_url + "/user/logout").status_code == 200
+
+    def test_api_user_delete(self):
+        time.sleep(10)
+        assert requests.delete(api_url + f'/user/{self.username}').status_code == 200
 
 
-@pytest.mark.usefixtures('db')
+@pytest.mark.usefixtures('db_2')
 class Test_group_2:
 
-    url = "http://localhost:8000/"
-    login = "admin"
-    password = "password"
-    driver_path = os.getcwd() + '/tools/chromedriver'
-    api_url = "https://petstore.swagger.io/v2"
-
     @classmethod
-    def setup_class(cls):
-        cls.group_name = 'test_nam1e'
-        cls.user_name = 'test_user'
-
-    @pytest.fixture(scope='class')
-    def db(self):
-        with psycopg2.connect(dbname='postgres', user='postgres', password='postgres', host='localhost') as connection:
-            with connection.cursor() as cur:
-                yield
-                cur.execute(f"""DELETE FROM auth_user WHERE username = '{self.user_name}'""")
-                connection.commit()
-
-    @pytest.fixture
-    def login_fixture(self):
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-extensions')
-        print(self.driver_path)
-        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-        self.driver.implicitly_wait(2)
-        self.driver.get(self.url)
-        self.driver.maximize_window()
-        self.driver.find_element(By.CSS_SELECTOR, "body > main > section > div > p:nth-child(3) > a").click()
-
-        login_field = self.driver.find_element(By.ID, "id_username")
-        login_field.send_keys(self.login)
-        password_field = self.driver.find_element(By.ID, "id_password")
-        password_field.send_keys(self.password)
-        self.driver.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
-        yield
-        self.driver.quit()
+    def setup(cls):
+        cls.name = uuid.uuid4().hex
+        cls.changed_name = uuid.uuid4().hex
 
     def test_user_2(self, login_fixture):
-        username_u = self.user_name
-        password_u = "YFhjgbgdG3$%^gvf54ef"
-        self.driver.find_element(By.CSS_SELECTOR,
+        username_u = user_name
+        password_u = user_password
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#content-main > div.app-auth.module > table > tbody > tr.model-user > th > a ").click()
 
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#content-main > ul > li > a").click()
 
-        login_field = self.driver.find_element(By.CSS_SELECTOR, "#id_username")
+        login_field = login_fixture.find_element(By.CSS_SELECTOR, "#id_username")
         login_field.send_keys(username_u)
-        password_field = self.driver.find_element(By.ID, "id_password1")
+        password_field = login_fixture.find_element(By.ID, "id_password1")
         password_field.send_keys(password_u)
-        password_field2 = self.driver.find_element(By.ID, "id_password2")
+        password_field2 = login_fixture.find_element(By.ID, "id_password2")
         password_field2.send_keys(password_u)
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#user_form > div > div > input.default").submit()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#id_is_staff").click()
-        self.driver.find_element(By.NAME,
+        login_fixture.find_element(By.NAME,
                                  "_save").submit()
         with psycopg2.connect(dbname='postgres', user='postgres', password='postgres', host='localhost') as connection:
             with connection.cursor() as cur:
                 cur.execute(f"""
                      SELECT username FROM auth_user as u
-                     WHERE u.username = '{self.user_name}'
+                     WHERE u.username = '{user_name}'
                  """)
                 db_username = cur.fetchone()[0]
-        assert self.user_name == db_username, f"{db_username} is not equal."
-        self.driver.find_element(By.CSS_SELECTOR,
+        assert user_name == db_username, f"{db_username} is not equal."
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#user-tools > a:nth-child(4)").click()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#content > p:nth-child(3) > a").click()
-        login_field = self.driver.find_element(By.ID, "id_username")
+        login_field = login_fixture.find_element(By.ID, "id_username")
         login_field.send_keys(username_u)
-        password_field = self.driver.find_element(By.ID, "id_password")
+        password_field = login_fixture.find_element(By.ID, "id_password")
         password_field.send_keys(password_u)
-        self.driver.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
-        text = self.driver.find_element(By.ID, "user-tools").text
+        login_fixture.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
+        text = login_fixture.find_element(By.ID, "user-tools").text
         assert f'Welcome, {username_u}'.lower() in text.lower()
 
     def test_post(self, login_fixture):
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#content-main > div.app-app.module > table > tbody > tr > th > a").click()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  '#changelist-form > p > a.showall').click()
-        self.driver.find_elements(By.XPATH, '//*[@id="result_list"]/tbody/tr')[-1].find_element(By.CSS_SELECTOR,
+        login_fixture.find_elements(By.XPATH, '//*[@id="result_list"]/tbody/tr')[-1].find_element(By.CSS_SELECTOR,
                                                                                                 "th > a").click()
-        image_uri = self.driver.find_element(By.CSS_SELECTOR, "#id_photo").text
-        self.driver.find_element(By.CSS_SELECTOR,
+        image_uri = login_fixture.find_element(By.CSS_SELECTOR, "#id_photo").text
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#post_form > div > div > p > a").click()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  '#content > form > div > input[type=submit]:nth-child(2)').submit()
-        self.driver.find_element(By.CSS_SELECTOR,
+        login_fixture.find_element(By.CSS_SELECTOR,
                                  "#user-tools > a:nth-child(2)").click()
-        last_uri = self.driver.find_elements(By.XPATH, '/html/body/main/div/div/div/div')[-1].find_element(By.CSS_SELECTOR,
+        last_uri = login_fixture.find_elements(By.XPATH, '/html/body/main/div/div/div/div')[-1].find_element(By.CSS_SELECTOR,
                                                                                                 "div > img").get_attribute('src')
         assert image_uri not in last_uri
 
     def test_api_pet(self):
-        name = uuid.uuid4().hex
-        print(name)
-        response = requests.post(self.api_url + "/pet", json={
+        response = requests.post(api_url + "/pet", json={
                 "id": 0,
                 "category": {
                     "id": 0,
                     "name": "string"
                 },
-                "name": name,
+                "name": self.name,
                 "photoUrls": [
                     "string"
                 ],
@@ -260,12 +192,17 @@ class Test_group_2:
             "accept": "application/json",
             "Content-Type": "application/json"
         })
+        self.petId = response.json()['id']
         assert response.status_code == 200
-        petId = response.json()['id']
-        assert requests.get(self.api_url + f'/pet/{petId}').status_code == 200
-        time.sleep(2)
-        assert requests.post(self.api_url + f"/pet/{petId}", data={
-                "name": "hgvhjhgfyujbvftyujbfyujftyujbvfgcfyujhfdrftyhvcxdtyuikouytdxcvhjhghiuyfdtyujhfcdft",
+
+    def test_api_pet_get(self):
+        time.sleep(10)
+        assert requests.get(api_url + f'/pet/{self.petId}').status_code == 200
+
+    def test_api_pet_change(self):
+        time.sleep(10)
+        assert requests.post(api_url + f"/pet/{self.petId}", data={
+                "name": self.changed_name,
                 "status": "available"
 
         },
@@ -273,10 +210,12 @@ class Test_group_2:
             "accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded"
         }).status_code == 200
-        time.sleep(2)
-        response = requests.get(self.api_url + f'/pet/{petId}')
+
+    def test_api_pet_changed(self):
+        time.sleep(10)
+        response = requests.get(api_url + f'/pet/{self.petId}')
         assert response.status_code == 200
-        assert response.json()['name'] == "hgvhjhgfyujbvftyujbfyujftyujbvfgcfyujhfdrftyhvcxdtyuikouytdxcvhjhghiuyfdtyujhfcdft"
+        assert response.json()['name'] == self.changed_name
 
 
 
