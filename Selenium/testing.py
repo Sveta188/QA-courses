@@ -203,7 +203,7 @@ class Test_group_2:
             "accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded"
         }).status_code == 200
-        time.sleep(30)
+        time.sleep(60)
         response = requests.get(api_url + f'/pet/{petId}')
         assert response.status_code == 200
         assert response.json()['name'] == self.changed_name
