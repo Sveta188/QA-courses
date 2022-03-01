@@ -2,21 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62f23f9b-82dd-40c6-8254-d0f1eb7fd72f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/conftest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/f.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/h22(js).py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/h22(xml).py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/h22(yaml).py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/h22get_post_ext.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/order.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/order.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/students.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/chromedriver" beforeDir="false" afterPath="$PROJECT_DIR$/tools/chromedriver" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -339,7 +326,7 @@
       <workItem from="1643040356896" duration="1179000" />
       <workItem from="1643455415819" duration="6489000" />
       <workItem from="1644669331129" duration="9320000" />
-      <workItem from="1646080874764" duration="9550000" />
+      <workItem from="1646080874764" duration="16528000" />
     </task>
     <servers />
   </component>

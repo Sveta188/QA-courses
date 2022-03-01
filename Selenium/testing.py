@@ -23,7 +23,7 @@ class Test_group_1:
 
     @classmethod
     def setup(cls):
-        cls.username = uuid.uuid4().hex
+        cls.username = "some_very_strange_username"
 
     def test_group(self, login_fixture):
         login_fixture.find_element(By.CSS_SELECTOR, "#content-main > div.app-auth.module > table > tbody > tr.model-group > th > a").click()
@@ -74,30 +74,27 @@ class Test_group_1:
           "email": "string@string",
           "password": "string",
           "phone": "string",
-          "userStatus": 0
+          "userStatus": 1
         },
         headers={
             "accept": "application/json",
             "Content-Type": "application/json"
         })
-        time.sleep(10)
         assert response.status_code == 200
 
     def test_api_user_login(self):
-        time.sleep(10)
+        time.sleep(20)
         assert requests.get(api_url + "/user/login", params={"username": self.username, "password": "string"}).status_code == 200
 
     def test_api_user_get(self):
-        time.sleep(10)
-        print(self.username)
+        time.sleep(120)
         assert requests.get(api_url + f'/user/{self.username}').status_code == 200
 
     def test_api_user_logout(self):
-        time.sleep(10)
         assert requests.get(api_url + "/user/logout").status_code == 200
+        time.sleep(20)
 
     def test_api_user_delete(self):
-        time.sleep(10)
         assert requests.delete(api_url + f'/user/{self.username}').status_code == 200
 
 
@@ -106,8 +103,8 @@ class Test_group_2:
 
     @classmethod
     def setup(cls):
-        cls.name = uuid.uuid4().hex
-        cls.changed_name = uuid.uuid4().hex
+        cls.name = "some_very_strange_name"
+        cls.changed_name = "another_very_strange_name"
 
     def test_user_2(self, login_fixture):
         username_u = user_name
@@ -153,8 +150,8 @@ class Test_group_2:
     def test_post(self, login_fixture):
         login_fixture.find_element(By.CSS_SELECTOR,
                                  "#content-main > div.app-app.module > table > tbody > tr > th > a").click()
-        login_fixture.find_element(By.CSS_SELECTOR,
-                                 '#changelist-form > p > a.showall').click()
+        # login_fixture.find_element(By.CSS_SELECTOR,
+        #                          '#changelist-form > p > a.showall').click()
         login_fixture.find_elements(By.XPATH, '//*[@id="result_list"]/tbody/tr')[-1].find_element(By.CSS_SELECTOR,
                                                                                                 "th > a").click()
         image_uri = login_fixture.find_element(By.CSS_SELECTOR, "#id_photo").text
@@ -192,16 +189,12 @@ class Test_group_2:
             "accept": "application/json",
             "Content-Type": "application/json"
         })
-        self.petId = response.json()['id']
+        petId = response.json()['id']
         assert response.status_code == 200
-
-    def test_api_pet_get(self):
+        time.sleep(20)
+        assert requests.get(api_url + f'/pet/{petId}').status_code == 200
         time.sleep(10)
-        assert requests.get(api_url + f'/pet/{self.petId}').status_code == 200
-
-    def test_api_pet_change(self):
-        time.sleep(10)
-        assert requests.post(api_url + f"/pet/{self.petId}", data={
+        assert requests.post(api_url + f"/pet/{petId}", data={
                 "name": self.changed_name,
                 "status": "available"
 
@@ -210,10 +203,8 @@ class Test_group_2:
             "accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded"
         }).status_code == 200
-
-    def test_api_pet_changed(self):
-        time.sleep(10)
-        response = requests.get(api_url + f'/pet/{self.petId}')
+        time.sleep(30)
+        response = requests.get(api_url + f'/pet/{petId}')
         assert response.status_code == 200
         assert response.json()['name'] == self.changed_name
 
