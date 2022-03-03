@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from Selenium.sources.variables import *
+import requests
 
 
 @pytest.fixture(scope='class')
@@ -48,3 +49,53 @@ def login_fixture():
     driver.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
     yield driver
     driver.quit()
+
+
+@pytest.fixture(scope="class")
+def adding_pet():
+    """Pet datas for adding"""
+    response = requests.post("https://petstore.swagger.io/v2/pet",
+                             json={
+                                 "id": 8,
+                                 "category": {
+                                     "id": 8,
+                                     "name": "cat"
+                                 },
+                                 "name": "Marik",
+                                 "photoUrls": [
+                                     "url"
+                                 ],
+                                 "tags": [
+                                     {
+                                         "id": 8,
+                                         "name": "Marik"
+                                     }
+                                 ],
+                                 "status": "available"
+                             })
+    return response
+
+
+@pytest.fixture(scope="class")
+def update_name_pet():
+    """Pet datas for adding"""
+    response = requests.put("https://petstore.swagger.io/v2/pet",
+                            json={
+                                "id": 8,
+                                "category": {
+                                    "id": 8,
+                                    "name": "cat"
+                                },
+                                "name": "Orange",
+                                "photoUrls": [
+                                    "url"
+                                ],
+                                "tags": [
+                                    {
+                                        "id": 8,
+                                        "name": "Orange"
+                                    }
+                                ],
+                                "status": "available"
+                            })
+    return response

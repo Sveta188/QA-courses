@@ -1,55 +1,29 @@
 import requests
-import time
-
-from Selenium.sources.variables import api_url
 
 
-class TestApi_2:
+class TestApi2:
+    """Check to correct work of app"""
 
-    @classmethod
-    def setup(cls):
-        cls.name = "some_very_strange_name"
-        cls.changed_name = "another_very_strange_name"
+    def test_app_is_available(self):
+        response = requests.get("https://petstore.swagger.io/")
+        assert response.ok
 
-    def test_api_pet(self):
-        response = requests.post(api_url + "/pet", json={
-                "id": 0,
-                "category": {
-                    "id": 0,
-                    "name": "string"
-                },
-                "name": self.name,
-                "photoUrls": [
-                    "string"
-                ],
-                "tags": [
-                    {
-                        "id": 0,
-                        "name": "string"
-                    }
-                ],
-                "status": "available"
-
-        },
-        headers={
-            "accept": "application/json",
-            "Content-Type": "application/json"
-        })
-        petId = response.json()['id']
+    def test_new_pet(self, adding_pet):
+        """Test add new pet"""
+        response = adding_pet
         assert response.status_code == 200
-        time.sleep(20)
-        assert requests.get(api_url + f'/pet/{petId}').status_code == 200
-        time.sleep(10)
-        assert requests.post(api_url + f"/pet/{petId}", data={
-                "name": self.changed_name,
-                "status": "available"
 
-        },
-        headers={
-            "accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded"
-        }).status_code == 200
-        time.sleep(60)
-        response = requests.get(api_url + f'/pet/{petId}')
+    def test_check_adding(self):
+        """Test check that pet is add"""
+        response = requests.get("https://petstore.swagger.io/v2/pet/findByStatus?status=available")
         assert response.status_code == 200
-        assert response.json()['name'] == self.changed_name
+
+    def test_update_name(self, update_name_pet):
+        """Test update name of pet"""
+        response = update_name_pet
+        assert response.status_code == 200
+
+    def test_check_updating(self):
+        """Test check that the name of pet is update"""
+        response = requests.get("https://petstore.swagger.io/v2/pet/findByStatus?status=available")
+        assert response.status_code == 200
