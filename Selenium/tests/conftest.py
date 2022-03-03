@@ -1,24 +1,10 @@
 import psycopg2
 import pytest
-import os
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-
-url = os.getenv("API_URL")
-login = os.getenv("API_LOGIN")
-aoi_password = os.getenv("API_PASSWORD")
-api_url = os.getenv('REMOTE_API_URL')
-
-dbname=os.getenv('DB_NAME')
-user=os.getenv('DB_USER')
-password=os.getenv('DB_PASSWORD')
-host=os.getenv('DB_HOST')
-
-group_name = os.getenv('GROUP_NAME')
-user_name = os.getenv('USER_NAME')
-
+from Selenium.sources.variables import *
 
 
 @pytest.fixture(scope='class')
@@ -47,7 +33,7 @@ def db_2():
 def login_fixture():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-extensions')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.implicitly_wait(2)
@@ -58,7 +44,7 @@ def login_fixture():
     login_field = driver.find_element(By.ID, "id_username")
     login_field.send_keys(login)
     password_field = driver.find_element(By.ID, "id_password")
-    password_field.send_keys(aoi_password)
+    password_field.send_keys(api_password)
     driver.find_element(By.CSS_SELECTOR, "#login-form > div.submit-row > input[type=submit]").submit()
     yield driver
     driver.quit()
